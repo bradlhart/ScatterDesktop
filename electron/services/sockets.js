@@ -7,6 +7,7 @@ const https = require('https');
 const WebSocket = require('ws');
 const net = require('net');
 const {isDev} = require('../utils');
+const uuid = require('uuid');
 
 let mainWindow;
 const sendToEmbed = (payload) => mainWindow.webContents.send('socketResponse', payload);
@@ -42,10 +43,12 @@ class LowLevelSocketService {
 
 		const socketHandler = socket => {
 			let origin = null;
+			socket.id = uuid.v4();
 
 			socket.send("40");
 			socket.send("40/scatter");
 			socket.send(`42/scatter,["connected"]`);
+			this.emitSocket(socket, 'id', {id:socket.id});
 
 			const id = Math.round(Math.random() * 999999999).toString();
 
